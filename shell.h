@@ -7,6 +7,6 @@
 #include <sys/wait.h>
 
 
-char ** parse_args(char * line); // separates line by " ", returns array, MALLOCs
+char ** sep_line(char * line, char * delim); // separates line by delim, returns array, MALLOCs
 int read_command(char * cmdbuffer); // fgets to cmdbuffer
-int exec_command(char * cmd); // uses parse_args to make cmd an argv, frees malloc from parse_args
+int exec_command(char * cmd); // uses sep_line to make cmd an argv, frees malloc from sep_line

@@ -1,9 +1,9 @@
 #include "shell.h"
 
-char ** parse_args(char * line) {
+char ** sep_line(char * line, char * delim) {
     char ** argv = calloc(sizeof(char *), 6);
     int i = 0;
-    while ((argv[i++] = strsep(&line, " ")) != NULL) {}
+    while ((argv[i++] = strsep(&line, delim)) != NULL) {}
     return argv;
 }
 
@@ -13,7 +13,7 @@ int read_command(char * cmdbuffer) {
 }
 
 int exec_command(char * cmd) {
-    char ** argv = parse_args(cmd);
+    char ** argv = sep_line(cmd, " ");
     int f = fork();
     if (f) {
         wait(&f);
