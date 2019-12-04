@@ -7,9 +7,10 @@ char ** sep_line(char * line, char * delim) {
     return argv;
 }
 
-int read_command(char * cmdbuffer) {
+void read_command(char * cmdbuffer) {
     printf(">");
     fgets(cmdbuffer, 100, stdin);
+
 }
 
 int exec_command(char * cmd) {
