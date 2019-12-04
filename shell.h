@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#define BUFFERSIZE 256
 
 char ** sep_line(char * line, char * delim); // separates line by delim, returns array, MALLOCs
 void read_command(char * cmdbuffer); // fgets to cmdbuffer
