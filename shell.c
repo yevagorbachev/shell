@@ -19,8 +19,18 @@ int exec_command(char * cmd) {
     if (f) {
         wait(&f);
         free(argv);
+        printf("%d\n",f);
         return f;
     } else {
-        execvp(argv[0], argv);
+        if (execvp(argv[0], argv) == -1){
+          exit(0);
+        }
+    }
+    return 0;
+}
+
+void exec_all_commands(char ** cmds) {
+    for (int i = 0; cmds[i] != NULL; i++){
+      //exec_command(cmds[i]);
     }
 }
