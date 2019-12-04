@@ -18,8 +18,8 @@ int exec_command(char * cmd) {
     if (f) {
         wait(&f);
         free(argv);
+        return f;
     } else {
         execvp(argv[0], argv);
     }
-    wait(f);
 }
