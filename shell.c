@@ -9,7 +9,7 @@ char ** sep_line(char * line, char * delim) {
 
 void read_command(char * cmdbuffer) {
     printf(">");
-    fgets(cmdbuffer, 100, stdin);
+    fgets(cmdbuffer, BUFFERSIZE, stdin);
 
 }
 

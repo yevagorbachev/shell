@@ -1,7 +1,7 @@
 #include "shell.h"
 
 int main() {
-    char cmdbuffer[100];
+    char cmdbuffer[BUFFERSIZE];
     cmdbuffer[0] = '\0';
 
     char * test1 = "ls -a";
