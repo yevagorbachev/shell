@@ -19,7 +19,6 @@ int exec_command(char * cmd) {
     if (f) {
         wait(&f);
         free(argv);
-        printf("%d\n",f);
         return f;
     } else {
         if (execvp(argv[0], argv) == -1){
@@ -31,6 +30,6 @@ int exec_command(char * cmd) {
 
 void exec_all_commands(char ** cmds) {
     for (int i = 0; cmds[i] != NULL; i++){
-      //exec_command(cmds[i]);
+      exec_command(cmds[i]);
     }
 }
