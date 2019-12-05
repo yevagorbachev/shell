@@ -29,13 +29,14 @@ int exec_command(char * cmd) {
 }
 
 int exec_cd(char * cmd){
-    
+    char ** argv = sep_line(cmd, " ");
+    chdir(argv[1]);
     return 0;
 }
 
 void exec_all_commands(char ** cmds) {
     for (int i = 0; cmds[i] != NULL; i++){
-      if (strcmp(cmds[i], "cd") == 0){
+      if (strncmp(cmds[i], "cd", 2) == 0){
         exec_cd(cmds[i]);
       } else {
         exec_command(cmds[i]);
