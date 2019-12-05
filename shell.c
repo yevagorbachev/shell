@@ -28,8 +28,17 @@ int exec_command(char * cmd) {
     return 0;
 }
 
+int exec_cd(char * cmd){
+    
+    return 0;
+}
+
 void exec_all_commands(char ** cmds) {
     for (int i = 0; cmds[i] != NULL; i++){
-      exec_command(cmds[i]);
+      if (strcmp(cmds[i], "cd") == 0){
+        exec_cd(cmds[i]);
+      } else {
+        exec_command(cmds[i]);
+      }
     }
 }
