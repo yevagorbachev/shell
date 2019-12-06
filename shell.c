@@ -37,7 +37,7 @@ void exec_all(char * cmds) {
             free(cmdv); // FREE 1 CASE 1
             exit(0);
         } else {
-            exec_single(cmdv[i]);
+            exec_single(cmdv[i]); // MALLOC 2 + FREE 2
         }
     }
     free(cmdv); // FREE 1 CASE 2
