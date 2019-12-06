@@ -10,7 +10,7 @@ char ** sep_line(char * line, char * delim) {
 }
 
 void read_command(char * cmdbuffer) {
-    char cwd[256];
+    char cwd[CWDSIZE];
     getcwd(cwd, CWDSIZE);
     printf("%s>", cwd);
     fgets(cmdbuffer, BUFFERSIZE, stdin);

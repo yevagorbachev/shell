@@ -6,8 +6,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define BUFFERSIZE 256
-#define CWDSIZE 1024
+#define BUFFERSIZE 256 // max number of characters in command buffer
+#define CWDSIZE 1024 // max number of characters in path of CWD
 
 char ** sep_line(char * line, char * delim); // separates line by delim, returns array
 // MALLOC
