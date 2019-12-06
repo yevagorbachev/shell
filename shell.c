@@ -15,6 +15,13 @@ void read_command(char * cmdbuffer) {
 
 int exec_single(char * cmd) {
     char ** argv = sep_line(cmd, " ");
+    if (strncmp(argv[0], "exit", 4) == 0) {
+        exit(0);
+    }
+    else if (strncmp(argv[0], "cd", 2) == 0){
+        chdir(argv[1]);
+        return 0;
+    }
     int f = fork();
     if (f) {
         wait(&f);
@@ -34,13 +41,6 @@ int exec_cd(char * cmd){
 
 void exec_all(char ** cmds) {
     for (int i = 0; cmds[i] != NULL; i++){
-        if (strncmp(cmds[i], "exit", 4) == 0) {
-            exit(0);
-        }
-        else if (strncmp(cmds[i], "cd", 2) == 0){
-            exec_cd(cmds[i]);
-        } else {
-            exec_single(cmds[i]);
-      }
+        exec_single(cmds[i]);
     }
 }
