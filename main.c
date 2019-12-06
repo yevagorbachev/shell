@@ -8,7 +8,7 @@ int main() {
         read_command(cmdbuffer);
         cmdbuffer[strlen(cmdbuffer) - 1] = '\0';
         char ** commands = sep_line(cmdbuffer, ";");
-        exec_all_commands(commands);
+        exec_all(commands);
     }
 
 }

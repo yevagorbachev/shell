@@ -13,7 +13,7 @@ void read_command(char * cmdbuffer) {
 
 }
 
-int exec_command(char * cmd) {
+int exec_single(char * cmd) {
     char ** argv = sep_line(cmd, " ");
     int f = fork();
     if (f) {
@@ -32,7 +32,7 @@ int exec_cd(char * cmd){
     return 0;
 }
 
-void exec_all_commands(char ** cmds) {
+void exec_all(char ** cmds) {
     for (int i = 0; cmds[i] != NULL; i++){
         if (strncmp(cmds[i], "exit", 4) == 0) {
             exit(0);
@@ -40,7 +40,7 @@ void exec_all_commands(char ** cmds) {
         else if (strncmp(cmds[i], "cd", 2) == 0){
             exec_cd(cmds[i]);
         } else {
-            exec_command(cmds[i]);
+            exec_single(cmds[i]);
       }
     }
 }
