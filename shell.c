@@ -21,9 +21,7 @@ int exec_command(char * cmd) {
         free(argv);
         return f;
     } else {
-        if (execvp(argv[0], argv) == -1){
-            exit(0);
-        }
+        exit(execvp(argv[0], argv));
     }
     return 0;
 }
