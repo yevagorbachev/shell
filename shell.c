@@ -22,7 +22,7 @@ int exec_command(char * cmd) {
         return f;
     } else {
         if (execvp(argv[0], argv) == -1){
-          exit(0);
+            exit(0);
         }
     }
     return 0;
@@ -36,10 +36,13 @@ int exec_cd(char * cmd){
 
 void exec_all_commands(char ** cmds) {
     for (int i = 0; cmds[i] != NULL; i++){
-      if (strncmp(cmds[i], "cd", 2) == 0){
-        exec_cd(cmds[i]);
-      } else {
-        exec_command(cmds[i]);
+        if (strncmp(cmds[i], "exit", 4) == 0) {
+            exit(0);
+        }
+        else if (strncmp(cmds[i], "cd", 2) == 0){
+            exec_cd(cmds[i]);
+        } else {
+            exec_command(cmds[i]);
       }
     }
 }
