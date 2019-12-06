@@ -11,4 +11,4 @@
 char ** sep_line(char * line, char * delim); // separates line by delim, returns array, MALLOCs
 void read_command(char * cmdbuffer); // fgets to cmdbuffer
 int exec_single(char * cmd); // uses sep_line to make cmd an argv, frees malloc from sep_line
-void exec_all(char ** cmds); // loops though list of commands and executes all commands in list
+void exec_all(char * cmds); // loops though list of commands and executes all commands in list

@@ -14,27 +14,31 @@ void read_command(char * cmdbuffer) {
 }
 
 int exec_single(char * cmd) {
-    char ** argv = sep_line(cmd, " ");
-    if (strncmp(argv[0], "exit", 4) == 0) {
-        exit(0);
-    }
-    else if (strncmp(argv[0], "cd", 2) == 0){
+    int f = 0;
+    char ** argv = sep_line(cmd, " "); // MALLOC 1
+    if (strncmp(argv[0], "cd", 2) == 0) {
         chdir(argv[1]);
-        return 0;
-    }
-    int f = fork();
-    if (f) {
-        wait(&f);
-        free(argv);
-        return f;
     } else {
-        exit(execvp(argv[0], argv));
+        f = fork();
+        if (f) {
+            wait(&f);
+        } else {
+            exit(execvp(argv[0], argv));
+        }
     }
-    return 0;
+    free(argv); // FREE 1
+    return f;
 }
 
-void exec_all(char ** cmds) {
-    for (int i = 0; cmds[i] != NULL; i++){
-        exec_single(cmds[i]);
+void exec_all(char * cmds) {
+    char ** cmdv = sep_line(cmds, ";"); // MALLOC 1
+    for (int i = 0; cmdv[i] != NULL; i++){
+        if (strncmp(cmdv[i], "exit", 4) == 0) {
+            free(cmdv); // FREE 1 CASE 1
+            exit(0);
+        } else {
+            exec_single(cmdv[i]);
+        }
     }
+    free(cmdv); // FREE 1 CASE 2
 }
