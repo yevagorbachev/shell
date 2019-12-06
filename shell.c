@@ -34,6 +34,14 @@ int exec_single(char * cmd) {
     return f;
 }
 
+//PLANNING FOR PIPING
+//fork()
+//popen(command, "w") always
+//how to handle multiple?
+//possible from tail:
+//ls -l | xxd | wc evaluates as
+// popen(wc, "w"); fork(); exec_single("ls -l | xxd");
+
 void exec_all(char * cmds) {
     char ** cmdv = sep_line(cmds, ";"); // MALLOC 1
     for (int i = 0; cmdv[i] != NULL; i++) {
