@@ -33,12 +33,6 @@ int exec_single(char * cmd) {
     return 0;
 }
 
-int exec_cd(char * cmd){
-    char ** argv = sep_line(cmd, " ");
-    chdir(argv[1]);
-    return 0;
-}
-
 void exec_all(char ** cmds) {
     for (int i = 0; cmds[i] != NULL; i++){
         exec_single(cmds[i]);
