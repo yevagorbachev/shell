@@ -3,12 +3,16 @@
 char ** sep_line(char * line, char * delim) {
     char ** argv = calloc(sizeof(char *), 6);
     int i = 0;
-    while ((argv[i++] = strsep(&line, delim)) != NULL) {}
+    while ((argv[i++] = strsep(&line, delim)) != NULL) {
+        // uses return value of assignment
+    }
     return argv;
 }
 
 void read_command(char * cmdbuffer) {
-    printf(">");
+    char cwd[256];
+    getcwd(cwd, CWDSIZE);
+    printf("%s>", cwd);
     fgets(cmdbuffer, BUFFERSIZE, stdin);
 
 }
@@ -16,14 +20,14 @@ void read_command(char * cmdbuffer) {
 int exec_single(char * cmd) {
     int f = 0;
     char ** argv = sep_line(cmd, " "); // MALLOC 1
-    if (strncmp(argv[0], "cd", 2) == 0) {
+    if (strncmp(argv[0], "cd", 2) == 0) { // special case - no fork for cd
         chdir(argv[1]);
     } else {
         f = fork();
         if (f) {
             wait(&f);
         } else {
-            exit(execvp(argv[0], argv));
+            exit(execvp(argv[0], argv)); // if execvp fails, exits anyway
         }
     }
     free(argv); // FREE 1
@@ -32,7 +36,7 @@ int exec_single(char * cmd) {
 
 void exec_all(char * cmds) {
     char ** cmdv = sep_line(cmds, ";"); // MALLOC 1
-    for (int i = 0; cmdv[i] != NULL; i++){
+    for (int i = 0; cmdv[i] != NULL; i++) {
         if (strncmp(cmdv[i], "exit", 4) == 0) {
             free(cmdv); // FREE 1 CASE 1
             exit(0);

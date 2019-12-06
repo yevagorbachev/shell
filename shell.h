@@ -7,6 +7,7 @@
 #include <sys/wait.h>
 
 #define BUFFERSIZE 256
+#define CWDSIZE 1024
 
 char ** sep_line(char * line, char * delim); // separates line by delim, returns array
 // MALLOC
