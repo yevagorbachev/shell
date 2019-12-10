@@ -1,19 +1,14 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include "parsing.h"
 
 #define BUFFERSIZE 256 // max number of characters in command buffer
 #define CWDSIZE 1024 // max number of characters in path of CWD
 
-char ** sep_line(char * line, char * delim); // separates line by delim, returns array
-// MALLOC
-char * clean_sep(char ** line, char delim); // functions like strsep but replaces spaces surrounding the single delimiter with nulls
-char ** clean_sep_line(char * line, char delim); // like sep_line but uses clean_sep instead of strsep
-//MALLOC
+
 void read_command(char * cmdbuffer); // fgets BUFFERSIZE characters, writes to cmdbuffer
 int exec_single(char * cmd); // makes cmd an argv through sep_line(," "), executes argv 
 // MALLOC (from sep_line) + FREE
