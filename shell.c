@@ -10,16 +10,14 @@ void read_command(char * cmdbuffer) {
 
 int exec_single(char * cmd) {
     int f = 0;
+    if(strchr(cmd,'>')){
+      //printf("%s\n", argv[i]);
+      redirect_out(cmd);
+      return f;
+    }
+
     char ** argv = sep_line(cmd, " "); // MALLOC 1
 
-    for (int i = 0; argv[i] != NULL; i++) {
-      //printf("%s\n", argv[i]);
-      if (strcmp(argv[i], ">") == 0){
-        redirect_out(argv);
-        return f;
-      }
-    }
-    //printf("ahhhhhhhhh\n");
     if (strncmp(argv[0], "cd", 2) == 0) { // special case - no fork for cd
         chdir(argv[1]);
     } else {
@@ -40,27 +38,12 @@ static void keyboard_interupt(int signo){
   }
 }
 
-void redirect_out(char ** cmd){
-  char ** argv = calloc(sizeof(char *), 20);
-  int a = 1;
-  int file = 0;
-  for (int i = 0; cmd[i] != NULL; i++){
-    if (strcmp(cmd[i],">") == 0){
-      a = 1;
-      file = i + 1;
-    } else {
-      if (a){
-        argv[i] = cmd[i];
-      }
-    }
-  }
+void redirect_out(char * cmd){
+  char ** args = clean_sep_line(cmd, '>');
+  char ** argv = sep_line(args[0], " ");
+  char * file = args[1];
 
-  // for (int j = 0; argv[j] != NULL; j++){
-  //   printf("%s\n", argv[j]);
-  // }
-  //printf("File: %s\n", argv[file]);
-
-  int fd = open(argv[file], O_RDWR | O_CREAT | O_TRUNC,  0640);
+  int fd = open(file, O_RDWR | O_CREAT | O_TRUNC,  0640);
   if (fd == -1){
     printf("Error opeing file: %s\n", strerror(errno));
   }
@@ -83,6 +66,34 @@ void redirect_out(char ** cmd){
       //printf("HEEEERE\n");
       exit(execvp(argv[0], argv)); // if execvp fails, exits anyway
   }
+}
+
+void redirect_in(char ** cmd){
+  char ** argv = calloc(sizeof(char *), 20);
+  int a = 1;
+  int file = 0;
+  for (int i = 0; cmd[i] != NULL; i++){
+    if (strcmp(cmd[i],"<") == 0){
+      a = 1;
+      file = i + 1;
+    } else {
+      if (a){
+        argv[i] = cmd[i];
+      }
+    }
+  }
+
+  int fd = open(argv[file], O_RDWR | O_CREAT,  0640);
+  if (fd == -1){
+    printf("Error opeing file: %s\n", strerror(errno));
+  }
+
+  int backup = dup(STDIN_FILENO);
+  if (dup2(fd,0) < 0){
+    printf("dup2 error: %s\n",strerror(errno));
+  }
+
+
 }
 
 
