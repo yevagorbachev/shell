@@ -12,7 +12,7 @@ char ** sep_line(char * line, char * delim) {
 void read_command(char * cmdbuffer) {
     char cwd[CWDSIZE];
     getcwd(cwd, CWDSIZE);
-    printf("%s>", cwd);
+    printf("%s$", cwd);
     fgets(cmdbuffer, BUFFERSIZE, stdin);
 
 }
@@ -33,6 +33,31 @@ int exec_single(char * cmd) {
     free(argv); // FREE 1
     return f;
 }
+
+static void keyboard_interupt(int signo){
+  if (signo == SIGINT){
+    exit(0);
+  }
+}
+
+void redirect_out(char * command, char * file){
+  char ** argv = sep_line(cmd, " ");
+  fd = open(file, O_RDWR);
+  backup = dup(STDOUT_FILENO);
+  if (dup2(fd,1) < 0){
+    printf("dup2 error: %s\n",strerror(errno));
+  }
+  close(file);
+  f = fork();
+  if (f) {
+      wait(&f);
+      dup2(backup, 1);
+      close(backup);
+  } else {
+      exit(execvp(argv[0], argv)); // if execvp fails, exits anyway
+  }
+}
+
 
 void exec_all(char * cmds) {
     char ** cmdv = sep_line(cmds, ";"); // MALLOC 1
