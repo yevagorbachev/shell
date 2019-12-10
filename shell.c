@@ -60,7 +60,7 @@ void redirect_out(char ** cmd){
   // }
   //printf("File: %s\n", argv[file]);
 
-  int fd = open(argv[file], O_RDWR | O_CREAT,  0640);
+  int fd = open(argv[file], O_RDWR | O_CREAT | O_TRUNC,  0640);
   if (fd == -1){
     printf("Error opeing file: %s\n", strerror(errno));
   }
