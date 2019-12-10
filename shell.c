@@ -3,7 +3,7 @@
 void read_command(char * cmdbuffer) {
     char cwd[CWDSIZE];
     getcwd(cwd, CWDSIZE);
-    printf("%s$", cwd);
+    printf("%s$ ", cwd);
     fgets(cmdbuffer, BUFFERSIZE, stdin);
 
 }
@@ -11,6 +11,15 @@ void read_command(char * cmdbuffer) {
 int exec_single(char * cmd) {
     int f = 0;
     char ** argv = sep_line(cmd, " "); // MALLOC 1
+
+    for (int i = 0; argv[i] != NULL; i++) {
+      //printf("%s\n", argv[i]);
+      if (strcmp(argv[i], ">") == 0){
+        redirect_out(argv);
+        return f;
+      }
+    }
+    //printf("ahhhhhhhhh\n");
     if (strncmp(argv[0], "cd", 2) == 0) { // special case - no fork for cd
         chdir(argv[1]);
     } else {
@@ -31,20 +40,47 @@ static void keyboard_interupt(int signo){
   }
 }
 
-void redirect_out(char * command, char * file){
-  char ** argv = sep_line(cmd, " ");
-  fd = open(file, O_RDWR);
-  backup = dup(STDOUT_FILENO);
+void redirect_out(char ** cmd){
+  char ** argv = calloc(sizeof(char *), 20);
+  int a = 1;
+  int file = 0;
+  for (int i = 0; cmd[i] != NULL; i++){
+    if (strcmp(cmd[i],">") == 0){
+      a = 1;
+      file = i + 1;
+    } else {
+      if (a){
+        argv[i] = cmd[i];
+      }
+    }
+  }
+
+  // for (int j = 0; argv[j] != NULL; j++){
+  //   printf("%s\n", argv[j]);
+  // }
+  //printf("File: %s\n", argv[file]);
+
+  int fd = open(argv[file], O_RDWR | O_CREAT,  0640);
+  if (fd == -1){
+    printf("Error opeing file: %s\n", strerror(errno));
+  }
+
+  int backup = dup(STDOUT_FILENO);
   if (dup2(fd,1) < 0){
     printf("dup2 error: %s\n",strerror(errno));
   }
-  close(file);
-  f = fork();
+
+  int f = fork();
   if (f) {
+      //printf("!!!!!!!!!!!\n");
       wait(&f);
-      dup2(backup, 1);
+      if (dup2(backup,1) < 0){
+        printf("dup2 error: %s\n",strerror(errno));
+      }
+      close(fd);
       close(backup);
   } else {
+      //printf("HEEEERE\n");
       exit(execvp(argv[0], argv)); // if execvp fails, exits anyway
   }
 }
