@@ -10,9 +10,15 @@ void read_command(char * cmdbuffer) {
 
 int exec_single(char * cmd) {
     int f = 0;
+
     if(strchr(cmd,'>')){
       //printf("%s\n", argv[i]);
       redirect_out(cmd);
+      return f;
+    }
+    if(strchr(cmd,'<')){
+      //printf("%s\n", argv[i]);
+      redirect_in(cmd);
       return f;
     }
 
@@ -49,7 +55,7 @@ void redirect_out(char * cmd){
   }
 
   int backup = dup(STDOUT_FILENO);
-  if (dup2(fd,1) < 0){
+  if (dup2(fd,STDOUT_FILENO) < 0){
     printf("dup2 error: %s\n",strerror(errno));
   }
 
@@ -68,22 +74,12 @@ void redirect_out(char * cmd){
   }
 }
 
-void redirect_in(char ** cmd){
-  char ** argv = calloc(sizeof(char *), 20);
-  int a = 1;
-  int file = 0;
-  for (int i = 0; cmd[i] != NULL; i++){
-    if (strcmp(cmd[i],"<") == 0){
-      a = 1;
-      file = i + 1;
-    } else {
-      if (a){
-        argv[i] = cmd[i];
-      }
-    }
-  }
+void redirect_in(char * cmd){
+  char ** args = clean_sep_line(cmd, '<');
+  char ** argv = sep_line(args[0], " ");
+  char * file = args[1];
 
-  int fd = open(argv[file], O_RDWR | O_CREAT,  0640);
+  int fd = open(file, O_RDWR | O_CREAT,  0640);
   if (fd == -1){
     printf("Error opeing file: %s\n", strerror(errno));
   }
@@ -93,6 +89,17 @@ void redirect_in(char ** cmd){
     printf("dup2 error: %s\n",strerror(errno));
   }
 
+  int f = fork();
+  if (f) {
+      wait(&f);
+      if (dup2(backup,STDIN_FILENO) < 0){
+        printf("dup2 error: %s\n",strerror(errno));
+      }
+      close(fd);
+      close(backup);
+  } else {
+      exit(execvp(argv[0], argv)); // if execvp fails, exits anyway
+  }
 
 }
 
