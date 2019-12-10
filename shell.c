@@ -1,14 +1,5 @@
 #include "shell.h"
 
-char ** sep_line(char * line, char * delim) {
-    char ** argv = calloc(sizeof(char *), 6);
-    int i = 0;
-    while ((argv[i++] = strsep(&line, delim)) != NULL) {
-        // uses return value of assignment
-    }
-    return argv;
-}
-
 void read_command(char * cmdbuffer) {
     char cwd[CWDSIZE];
     getcwd(cwd, CWDSIZE);
@@ -60,7 +51,7 @@ void redirect_out(char * command, char * file){
 
 
 void exec_all(char * cmds) {
-    char ** cmdv = sep_line(cmds, ";"); // MALLOC 1
+    char ** cmdv = clean_sep_line(cmds, ';'); // MALLOC 1
     for (int i = 0; cmdv[i] != NULL; i++) {
         if (strncmp(cmdv[i], "exit", 4) == 0) {
             free(cmdv); // FREE 1 CASE 1

@@ -8,5 +8,4 @@ int main() {
         cmdbuffer[strlen(cmdbuffer) - 1] = '\0';
         exec_all(cmdbuffer);
     }
-
 }

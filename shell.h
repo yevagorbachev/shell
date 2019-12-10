@@ -1,17 +1,15 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <errno.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include "parsing.h"
 
 #define BUFFERSIZE 256 // max number of characters in command buffer
 #define CWDSIZE 1024 // max number of characters in path of CWD
 
-char ** sep_line(char * line, char * delim); // separates line by delim, returns array
-// MALLOC
+
 void read_command(char * cmdbuffer); // fgets BUFFERSIZE characters, writes to cmdbuffer
 int exec_single(char * cmd); // makes cmd an argv through sep_line(," "), executes argv
 // MALLOC (from sep_line) + FREE
