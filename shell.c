@@ -1,4 +1,8 @@
 #include "shell.h"
+void redirect_out(char * cmd);
+void redirect_in(char * cmd);
+int my_pipe(char ** cmdv);
+
 
 void read_command(char * cmdbuffer) {
     char cwd[CWDSIZE];
@@ -10,16 +14,18 @@ void read_command(char * cmdbuffer) {
 
 int exec_single(char * cmd) {
     int f = 0;
-
-    if(strchr(cmd,'>')){
-      //printf("%s\n", argv[i]);
-      redirect_out(cmd);
-      return f;
+    if (strchr(cmd, '|')) {
+        return my_pipe(clean_sep_line(cmd,'|'));
     }
-    if(strchr(cmd,'<')){
-      //printf("%s\n", argv[i]);
-      redirect_in(cmd);
-      return f;
+    if(strchr(cmd,'>')){
+        //printf("%s\n", argv[i]);
+        redirect_out(cmd);
+        return f;
+    }
+    if (strchr(cmd,'<')){
+        //printf("%s\n", argv[i]);
+        redirect_in(cmd);
+        return f;
     }
 
     char ** argv = sep_line(cmd, " "); // MALLOC 1
@@ -103,6 +109,21 @@ void redirect_in(char * cmd){
 
 }
 
+int my_pipe(char ** cmdv) {
+    int f = fork();
+    if (f) {
+        wait(&f);
+        return f;
+    } else {
+        FILE * pipe_from = popen(cmdv[0],"r");
+        FILE * pipe_to = popen(cmdv[1],"w");
+        char buf;
+        while ((buf = getc(pipe_from)) != EOF) {
+            putc(buf, pipe_to);
+        }
+        exit(f);
+    }
+}
 
 void exec_all(char * cmds) {
     char ** cmdv = clean_sep_line(cmds, ';'); // MALLOC 1
