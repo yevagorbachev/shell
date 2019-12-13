@@ -54,47 +54,46 @@ int exec_single(char * cmd) {
 }
 
 void redirect_out(char * cmd){
-  char ** args = clean_sep_line(cmd, '>');
-  char ** argv = sep_line(args[0], " ");
-  char * file = args[1];
-
-  int fd = handle_errint(open(file, O_RDWR | O_CREAT | O_TRUNC,  0640)); // ERRNO
-
-  int backup = handle_errint(dup(STDOUT_FILENO));
-  handle_errint(dup2(fd,STDOUT_FILENO));
-
-  int f = handle_errint(fork());
-  if (f) {
-      handle_errint(wait(&f));
-      handle_errint(dup2(backup,1));
-
-      handle_errint(close(fd));
-      handle_errint(close(backup));
-  } else {
-      exit(handle_errint(execvp(argv[0], argv))); // if execvp fails, exits anyway
-  }
+    char ** args = clean_sep_line(cmd, '>');
+    char ** argv = sep_line(args[0], " ");
+    char * file = args[1];
+    
+    int fd = handle_errint(open(file, O_RDWR | O_CREAT | O_TRUNC,  0640)); // ERRNO
+    
+    int backup = handle_errint(dup(STDOUT_FILENO));
+    handle_errint(dup2(fd,STDOUT_FILENO));
+    
+    int f = handle_errint(fork());
+    if (f) {
+        handle_errint(wait(&f));
+        handle_errint(dup2(backup,1));
+    
+        handle_errint(close(fd));
+        handle_errint(close(backup));
+    } else {
+        exit(handle_errint(execvp(argv[0], argv))); // if execvp fails, exits anyway
+    }
 }
 
 void redirect_in(char * cmd){
-  char ** args = clean_sep_line(cmd, '<');
-  char ** argv = sep_line(args[0], " ");
-  char * file = args[1];
+    char ** args = clean_sep_line(cmd, '<');
+    char ** argv = sep_line(args[0], " ");
+    char * file = args[1];
 
-  int fd = handle_errint(open(file, O_RDWR | O_CREAT,  0640));
+    int fd = handle_errint(open(file, O_RDWR | O_CREAT,  0640));
 
-  int backup = handle_errint(dup(STDIN_FILENO));
-  handle_errint(dup2(fd,0));
+    int backup = handle_errint(dup(STDIN_FILENO));
+    handle_errint(dup2(fd,0));
 
-  int f = handle_errint(fork());
-  if (f) {
-      handle_errint(wait(&f));
-      handle_errint(dup2(backup,STDIN_FILENO));
-      handle_errint(close(fd));
-      handle_errint(close(backup));
-  } else {
-      exit(handle_errint(execvp(argv[0], argv)));
-  }
-
+    int f = handle_errint(fork());
+    if (f) {
+        handle_errint(wait(&f));
+        handle_errint(dup2(backup,STDIN_FILENO));
+        handle_errint(close(fd));
+        handle_errint(close(backup));
+    } else {
+        exit(handle_errint(execvp(argv[0], argv)));
+    }
 }
 
 int my_pipe(char ** cmdv) {
