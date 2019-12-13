@@ -21,10 +21,28 @@ int exec_single(char * cmd) {
         return my_pipe(clean_sep_line(cmd,'|'));
     }
 
-    if(strchr(cmd,'>') || strchr(cmd,'<')){
-        //printf("%s\n", argv[i]);
-        redirect_all(cmd);
-        return f;
+    // int count = 0;
+    //
+    // for (int i =0; cmd[i] != 0; i++){
+    //   printf("%c\n",cmd[i]);
+    //   if( cmd[i] == '>' || cmd[i] == '<'){
+    //     count++;
+    //   }
+    // }
+
+    if (strchr(cmd, '<') && strchr(cmd, '>')){
+      redirect_double(cmd);
+      return f;
+    }
+
+    if (strchr(cmd, '<')) {
+      redirect_in(cmd);
+      return f;
+    }
+
+    if (strchr(cmd, '>')) {
+      redirect_out(cmd);
+      return f;
     }
 
     char ** argv = sep_line(cmd, " "); // MALLOC 1
@@ -48,8 +66,53 @@ static void keyboard_interupt(int signo){
   }
 }
 
-void redirect_all(char * cmd){
+void redirect_double(char * cmd){
+  char ** argsin = clean_sep_line(cmd, '<');
+  char ** argvin = sep_line(argsin[0], " ");
 
+  char ** argsout = clean_sep_line(argsin[1], '>');
+  char ** argvout = sep_line(argsout[0], " ");
+  char * filein = argsout[0];
+  // printf("%s\n", filein);
+  char * fileout = argsout[1];
+  // printf("%s\n", fileout);
+
+  int fdin = open(filein, O_RDWR | O_CREAT | O_TRUNC,  0640);
+  if (fdin == -1){
+    printf("Error opeing file: %s\n", strerror(errno));
+  }
+  int fdout = open(fileout, O_RDWR | O_CREAT | O_TRUNC,  0640);
+  if (fdout == -1){
+    printf("Error opeing file: %s\n", strerror(errno));
+  }
+
+  int backupout = dup(STDOUT_FILENO);
+  if (dup2(fdout,STDOUT_FILENO) < 0){
+    printf("dup2 error: %s\n",strerror(errno));
+  }
+  int backupin = dup(STDIN_FILENO);
+  if (dup2(fdin,STDIN_FILENO) < 0){
+    printf("dup2 error: %s\n",strerror(errno));
+  }
+
+  int f = fork();
+  if (f) {
+      //printf("!!!!!!!!!!!\n");
+      wait(&f);
+      if (dup2(backupin,0) < 0){
+        printf("dup2 error: %s\n",strerror(errno));
+      }
+      if (dup2(backupout,1) < 0){
+        printf("dup2 error: %s\n",strerror(errno));
+      }
+      close(fdin);
+      close(backupin);
+      close(fdout);
+      close(backupout);
+  } else {
+      //printf("HEEEERE\n");
+      exit(execvp(argvin[0], argv)); // if execvp fails, exits anyway
+  }
 }
 
 void redirect_out(char * cmd){
@@ -93,7 +156,7 @@ void redirect_in(char * cmd){
   }
 
   int backup = dup(STDIN_FILENO);
-  if (dup2(fd,0) < 0){
+  if (dup2(fd,STDIN_FILENO) < 0){
     printf("dup2 error: %s\n",strerror(errno));
   }
 
@@ -113,7 +176,7 @@ void redirect_in(char * cmd){
 
 int my_pipe(char ** cmdv) {
     int f = fork();
-    handle(&f, -1);
+    // handle(&f, -1);
     if (f) {
         wait(&f);
         return f;
