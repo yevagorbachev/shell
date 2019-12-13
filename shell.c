@@ -85,7 +85,7 @@ void redirect_double(char * cmd){
   char * fileout = argsout[1];
   // printf("%s\n", fileout);
 
-  int fdin = open(filein, O_RDWR | O_CREAT | O_TRUNC,  0640);
+  int fdin = open(filein, O_RDWR | O_CREAT,  0640);
   if (fdin == -1){
     printf("Error opeing file: %s\n", strerror(errno));
   }
@@ -119,7 +119,7 @@ void redirect_double(char * cmd){
       close(backupout);
   } else {
       //printf("HEEEERE\n");
-      exit(execvp(argvin[0], argv)); // if execvp fails, exits anyway
+      exit(execvp(argvin[0], argvin)); // if execvp fails, exits anyway
   }
 }
 
@@ -169,7 +169,7 @@ void redirect_in(char * cmd){
       exit(execvp(argv[0], argv)); // if execvp fails, exits anyway
   }
 
-    int f = handle_errint(fork());
+    f = handle_errint(fork());
     if (f) {
         handle_errint(wait(&f));
         handle_errint(dup2(backup,STDIN_FILENO));
