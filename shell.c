@@ -117,6 +117,7 @@ void redirect_double(char * cmd){
       close(backupin);
       close(fdout);
       close(backupout);
+      free(argsin);free(argvin);free(argvout);free(argvout);
   } else {
       //printf("HEEEERE\n");
       exit(execvp(argvin[0], argvin)); // if execvp fails, exits anyway
