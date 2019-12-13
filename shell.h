@@ -12,6 +12,9 @@
 #define CWDSIZE 1024 // max number of characters in path of CWD
 
 
+void redirect_out(char * cmd);
+void redirect_in(char * cmd);
+int my_pipe(char ** cmdv);
 void read_command(char * cmdbuffer); // fgets BUFFERSIZE characters, writes to cmdbuffer
 int exec_single(char * cmd); // makes cmd an argv through sep_line(," "), executes argv
 // MALLOC (from sep_line) + FREE

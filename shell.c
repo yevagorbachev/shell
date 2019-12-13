@@ -1,15 +1,17 @@
 #include "shell.h"
-void redirect_out(char * cmd);
-void redirect_in(char * cmd);
-int my_pipe(char ** cmdv);
 
+void handle(void * value, void * errval) {
+    if (value == errval) {
+        printf("Error number %d: %s\n", errno, strerror(errno));
+        exit(0);
+    }
+}
 
 void read_command(char * cmdbuffer) {
     char cwd[CWDSIZE];
     getcwd(cwd, CWDSIZE);
     printf("%s$ ", cwd);
     fgets(cmdbuffer, BUFFERSIZE, stdin);
-
 }
 
 int exec_single(char * cmd) {
@@ -29,7 +31,6 @@ int exec_single(char * cmd) {
     }
 
     char ** argv = sep_line(cmd, " "); // MALLOC 1
-
     if (strncmp(argv[0], "cd", 2) == 0) { // special case - no fork for cd
         chdir(argv[1]);
     } else {
@@ -111,12 +112,16 @@ void redirect_in(char * cmd){
 
 int my_pipe(char ** cmdv) {
     int f = fork();
+    handle(&f, -1);
     if (f) {
         wait(&f);
         return f;
     } else {
         FILE * pipe_from = popen(cmdv[0],"r");
+        handle(pipe_from, NULL);
         FILE * pipe_to = popen(cmdv[1],"w");
+        handle(pipe_from, NULL);
+
         char buf;
         while ((buf = getc(pipe_from)) != EOF) {
             putc(buf, pipe_to);
