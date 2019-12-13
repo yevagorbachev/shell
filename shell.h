@@ -18,5 +18,6 @@ int exec_single(char * cmd); // makes cmd an argv through sep_line(," "), execut
 void exec_all(char * cmds); // makes cmds a cmdv through sep_line(,";"), exec_single each in cmdv
 // MALLOC 1 (from sep_line) + FREE 1
 // MALLOC 2 (from exec_single) + FREE 2
+void redirect_all(char * cmd); //
 void redirect_out(char * cmd); //redirects STDOUT to a file and overwrites existing contens
 void redirect_in(char * cmd); //redirects STDIN from a file and replaces it

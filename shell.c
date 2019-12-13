@@ -14,17 +14,14 @@ void read_command(char * cmdbuffer) {
 
 int exec_single(char * cmd) {
     int f = 0;
+
     if (strchr(cmd, '|')) {
         return my_pipe(clean_sep_line(cmd,'|'));
     }
-    if(strchr(cmd,'>')){
+
+    if(strchr(cmd,'>') || strchr(cmd,'<')){
         //printf("%s\n", argv[i]);
-        redirect_out(cmd);
-        return f;
-    }
-    if (strchr(cmd,'<')){
-        //printf("%s\n", argv[i]);
-        redirect_in(cmd);
+        redirect_all(cmd);
         return f;
     }
 
@@ -48,6 +45,10 @@ static void keyboard_interupt(int signo){
   if (signo == SIGINT){
     exit(0);
   }
+}
+
+void redirect_all(char * cmd){
+
 }
 
 void redirect_out(char * cmd){
