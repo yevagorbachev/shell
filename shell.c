@@ -39,18 +39,18 @@ int exec_single(char * cmd) {
       return f;
     }
 
-    char ** argv = sep_line(cmd, " "); // MALLOC 1
-    if (strncmp(argv[0], "cd", 2) == 0) { // special case - no fork for cd
+    char ** argv = sep_line(cmd, " ");
+    if (strncmp(argv[0], "cd", 2) == 0) {
         chdir(argv[1]);
     } else {
         f = handle_errint(fork());
         if (f) {
             handle_errint(wait(&f));
         } else {
-            exit(handle_errint(execvp(argv[0], argv))); // if execvp fails, exits anyway
+            exit(handle_errint(execvp(argv[0], argv)));
         }
     }
-    free(argv); // FREE 1
+    free(argv);
     return f;
 }
 
@@ -95,7 +95,7 @@ void redirect_double(char * cmd){
       free(argvout);
       free(argvout);
   } else {
-      exit(handle_errint(execvp(argvin[0], argvin))); // if execvp fails, exits anyway
+      exit(handle_errint(execvp(argvin[0], argvin)));
   }
 }
 
@@ -104,7 +104,7 @@ void redirect_out(char * cmd){
     char ** argv = sep_line(args[0], " ");
     char * file = args[1];
 
-    int fd = handle_errint(open(file, O_RDWR | O_CREAT | O_TRUNC,  0640)); // ERRNO
+    int fd = handle_errint(open(file, O_RDWR | O_CREAT | O_TRUNC,  0640));
 
     int backup = handle_errint(dup(STDOUT_FILENO));
     handle_errint(dup2(fd,STDOUT_FILENO));
@@ -120,7 +120,7 @@ void redirect_out(char * cmd){
         free(args);
         free(argv);
     } else {
-        exit(handle_errint(execvp(argv[0], argv))); // if execvp fails, exits anyway
+        exit(handle_errint(execvp(argv[0], argv)));
     }
 }
 
@@ -142,7 +142,7 @@ void redirect_in(char * cmd){
         close(fd);
         close(backup);
     } else {
-        exit(execvp(argv[0], argv)); // if execvp fails, exits anyway
+        exit(handle_errint(execvp(argv[0], argv)));
     }
 
     f = handle_errint(fork());
