@@ -20,6 +20,7 @@ By Yevgeniy Gorbachev and Amanda Chen
 1. Only one whitespace at most is allowed between commands and functions ( |, <, >, ; ) or the shell will break
 2. Semicolon after command will produce an errno
 3. Control-C will exit shell even if there is a function currently running
+4. At most 19 commands per line can be taken, with at most 19 tokens per command
 
 ## Files & Function Headers
 ### parsing.c
