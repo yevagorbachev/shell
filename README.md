@@ -1,19 +1,19 @@
 # SHELL
-![Image of Shell](http://www.it.uu.se/education/course/homepage/os/vt18/images/module-0/linux/shell-and-terminal/terminal-icon.png)
+By Yevgeniy Gorbachev and Amanda Chen
 ## Features
 1. Reading one line at a time, parsing the line to separate a command from its arguments
 2. Forks and executes the command
-  - The parent process waits until the executed program exits before reading the next command
+    1. The parent process waits until the executed program exits before reading the next command
 3. Reads and separates multiple commands on one line with ;
-  - ls -l;echo hello 
-  - First runs the command ls -l and then echo hello
+    1. ls -l;echo hello 
+    2. First runs the command ls -l and then echo hello
 4. cd command traverses through directories
 5. Simple redirection with one > or <
-  - w > wholist or tr a-z A-Z < wholist
+    1. w > wholist or tr a-z A-Z < wholist
 6. Double redirection with < then >
-  - tr a-z A-Z < wholist > foo
+    1. tr a-z A-Z < wholist > foo
 7. Simple piping with one |
-  - ls | wc
+    1. ls | wc
 8. exit command ends the shell program
 
 ## Bugs
