@@ -28,26 +28,13 @@ int exec_single(char * cmd) {
         return my_pipe(clean_sep_line(cmd,'|'));
     }
 
-    // int count = 0;
-    //
-    // for (int i =0; cmd[i] != 0; i++){
-    //   printf("%c\n",cmd[i]);
-    //   if( cmd[i] == '>' || cmd[i] == '<'){
-    //     count++;
-    //   }
-    // }
-
     if (strchr(cmd, '<') && strchr(cmd, '>')){
       redirect_double(cmd);
       return f;
-    }
-
-    if (strchr(cmd, '<')) {
+    } else if (strchr(cmd, '<')) {
       redirect_in(cmd);
       return f;
-    }
-
-    if (strchr(cmd, '>')) {
+    } else if (strchr(cmd, '>')) {
       redirect_out(cmd);
       return f;
     }
@@ -57,7 +44,6 @@ int exec_single(char * cmd) {
         chdir(argv[1]);
     } else {
         f = handle_errint(fork());
-
         if (f) {
             handle_errint(wait(&f));
         } else {
@@ -85,42 +71,31 @@ void redirect_double(char * cmd){
   char * fileout = argsout[1];
   // printf("%s\n", fileout);
 
-  int fdin = open(filein, O_RDWR | O_CREAT,  0640);
-  if (fdin == -1){
-    printf("Error opeing file: %s\n", strerror(errno));
-  }
-  int fdout = open(fileout, O_RDWR | O_CREAT | O_TRUNC,  0640);
-  if (fdout == -1){
-    printf("Error opeing file: %s\n", strerror(errno));
-  }
+  int fdin = handle_errint(open(filein, O_RDWR | O_CREAT,  0640));
+  int fdout = handle_errint(open(fileout, O_RDWR | O_CREAT | O_TRUNC,  0640));
 
   int backupout = dup(STDOUT_FILENO);
-  if (dup2(fdout,STDOUT_FILENO) < 0){
-    printf("dup2 error: %s\n",strerror(errno));
-  }
+  handle_errint(dup2(fdout,STDOUT_FILENO));
   int backupin = dup(STDIN_FILENO);
-  if (dup2(fdin,STDIN_FILENO) < 0){
-    printf("dup2 error: %s\n",strerror(errno));
-  }
+  handle_errint(dup2(fdin,STDIN_FILENO));
 
   int f = fork();
   if (f) {
-      //printf("!!!!!!!!!!!\n");
       wait(&f);
-      if (dup2(backupin,0) < 0){
-        printf("dup2 error: %s\n",strerror(errno));
-      }
-      if (dup2(backupout,1) < 0){
-        printf("dup2 error: %s\n",strerror(errno));
-      }
-      close(fdin);
-      close(backupin);
-      close(fdout);
-      close(backupout);
-      free(argsin);free(argvin);free(argvout);free(argvout);
+      handle_errint(dup2(backupin, 0));
+      handle_errint(dup2(backupout, 1));
+
+      handle_errint(close(fdin));
+      handle_errint(close(backupin));
+      handle_errint(close(fdout));
+      handle_errint(close(backupout));
+
+      free(argsin);
+      free(argvin);
+      free(argvout);
+      free(argvout);
   } else {
-      //printf("HEEEERE\n");
-      exit(execvp(argvin[0], argvin)); // if execvp fails, exits anyway
+      exit(handle_errint(execvp(argvin[0], argvin))); // if execvp fails, exits anyway
   }
 }
 
@@ -141,6 +116,9 @@ void redirect_out(char * cmd){
 
         handle_errint(close(fd));
         handle_errint(close(backup));
+
+        free(args);
+        free(argv);
     } else {
         exit(handle_errint(execvp(argv[0], argv))); // if execvp fails, exits anyway
     }
@@ -153,22 +131,19 @@ void redirect_in(char * cmd){
 
     int fd = handle_errint(open(file, O_RDWR | O_CREAT,  0640));
 
-  int backup = dup(STDIN_FILENO);
-  if (dup2(fd,STDIN_FILENO) < 0){
-    printf("dup2 error: %s\n",strerror(errno));
-  }
+    int backup = dup(STDIN_FILENO);
+    handle_errint(dup2(fd, STDIN_FILENO));
 
-  int f = fork();
-  if (f) {
-      wait(&f);
-      if (dup2(backup,STDIN_FILENO) < 0){
-        printf("dup2 error: %s\n",strerror(errno));
-      }
-      close(fd);
-      close(backup);
-  } else {
-      exit(execvp(argv[0], argv)); // if execvp fails, exits anyway
-  }
+    int f = handle_errint(fork());
+    if (f) {
+        handle_errint(wait(&f));
+        handle_errint(dup2(backup,STDIN_FILENO));
+
+        close(fd);
+        close(backup);
+    } else {
+        exit(execvp(argv[0], argv)); // if execvp fails, exits anyway
+    }
 
     f = handle_errint(fork());
     if (f) {
@@ -176,6 +151,9 @@ void redirect_in(char * cmd){
         handle_errint(dup2(backup,STDIN_FILENO));
         handle_errint(close(fd));
         handle_errint(close(backup));
+        
+        free(args);
+        free(argv);
     } else {
         exit(handle_errint(execvp(argv[0], argv)));
     }
