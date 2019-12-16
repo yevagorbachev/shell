@@ -1,5 +1,5 @@
-# SHELL by Yevgeniy Gorbachev and Amanda Chen
-![Image of Shell](http://www.it.uu.se/education/course/homepage/os/vt18/images/module-0/linux/shell-and-terminal/terminal-icon.png)
+# SHELL
+By Yevgeniy Gorbachev and Amanda Chen
 ## Features
 1. Reading one line at a time, parsing the line to separate a command from its arguments
 2. Forks and executes the command
