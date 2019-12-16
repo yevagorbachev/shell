@@ -20,7 +20,7 @@
 - 
 
 ## Bugs
-- Only one space at most is allowed between commands and functions or the shell will break
+- Only one whitespace at most is allowed between commands and functions ( |, <, >, ; ) or the shell will break
 - Semicolon after command will produce an errno
 - Control-C will exit shell even if there is a function currently running
 
@@ -30,67 +30,50 @@ Handles all line parsing functions
 ```
 char * clean_sep(char ** line, char delim); 
 ```
-Returns:
+Returns: Pointer to the beginning of line
 Functions like strsep but replaces spaces surrounding the single delimiter with nulls
 ```
 char ** sep_line(char * line, char * delim);
 ```
-Returns: array
-Separates line by delim
+Returns: Array of strings where each entry is a token
+Separates line by delimiter
 Allocates heap memory
 ```
 char ** clean_sep_line(char * line, char delim);
 ```
-Returns: 
+Returns: Array of strings where each entry is a token
 Like sep_line but uses clean_sep instead of strsep, on a single-character delimiter
 Allocates heap memory
 
 ### shell.c
-Handles the forking execution of commands
-```
-void redirect_out(char * cmd);
-```
-Returns: 
-
-```
-void redirect_in(char * cmd);
-```
-Returns:
-
+Handles the forking and execution of commands
 ```
 int my_pipe(char ** cmdv);
 ```
-Returns:
-
+Returns: Value of fork()
+Takes in a commands with both a pipe and executes it
 ```
-void read_command(char * cmdbuffer); // fgets BUFFERSIZE characters, writes to cmdbuffer
+void read_command(char * cmdbuffer);
 ```
-Returns:
-
+fgets BUFFERSIZE characters and writes to cmdbuffer
 ```
-int exec_single(char * cmd); // makes cmd an argv through sep_line(," "), executes argv
+int exec_single(char * cmd);
 ```
-Returns:
-
+Returns: Value of fork()
+Makes cmd an argv through sep_line(," "), executes argv
 ```
-// MALLOC (from sep_line) + FREE
-void exec_all(char * cmds); // makes cmds a cmdv through sep_line(,";"), exec_single each in cmdv
+void exec_all(char * cmds);
 ```
-Returns:
-
+Makes cmds a cmdv through sep_line(,";"), exec_single each in cmdv
 ```
-// MALLOC 1 (from sep_line) + FREE 1
-// MALLOC 2 (from exec_single) + FREE 2
 void redirect_double(char * cmd); //redirects both STDOUT and STDIN
 ```
-Returns:
-
+Takes in a commands with both a redirect out and a redirect in and executes it
 ```
-void redirect_out(char * cmd); //redirects STDOUT to a file and overwrites existing contens
+void redirect_out(char * cmd);
 ```
-Returns:
-
+Takes in a commands with a redirect out and executes it
 ```
-void redirect_in(char * cmd); //redirects STDIN from a file and replaces it
+void redirect_in(char * cmd);
 ```
-Returns:
+Takes in a commands with a redirect in and executes it
