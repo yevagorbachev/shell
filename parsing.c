@@ -1,9 +1,10 @@
 #include "parsing.h"
 
-char ** sep_line(char * line, char * delim) {
+char ** sep_line(char * line, char delim) {
+    char delims[2] = {delim, '\0'};
     char ** argv = calloc(sizeof(char *), 20);
     int i = 0;
-    while ((argv[i++] = strsep(&line, delim)) != NULL) {}
+    while ((argv[i++] = strsep(&line, delims)) != NULL) {}
     return argv;
 }
 

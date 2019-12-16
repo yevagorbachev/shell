@@ -13,14 +13,49 @@
 
 
 void redirect_out(char * cmd);
+// takes the null-terminated string pointed to by cmd
+// redirects STDOUT; overwrites existing contents of output file
+// uses clean_sep_line to separate by '>'
+// frees malloc from clean_sep_line call
+
 void redirect_in(char * cmd);
-int my_pipe(char ** cmdv);
-void read_command(char * cmdbuffer); // fgets BUFFERSIZE characters, writes to cmdbuffer
-int exec_single(char * cmd); // makes cmd an argv through sep_line(," "), executes argv
-// MALLOC (from sep_line) + FREE
-void exec_all(char * cmds); // makes cmds a cmdv through sep_line(,";"), exec_single each in cmdv
-// MALLOC 1 (from sep_line) + FREE 1
-// MALLOC 2 (from exec_single) + FREE 2
-void redirect_double(char * cmd); //redirects both STDOUT and STDIN
-void redirect_out(char * cmd); //redirects STDOUT to a file and overwrites existing contens
-void redirect_in(char * cmd); //redirects STDIN from a file and replaces it
+// takes the null-terminated string pointed to by cmd
+// replaces STDIN with the contents of the input file
+// executes the command using exec_single
+// uses clean_sep_line to separate by '<'
+// frees malloc from clean_sep_line call
+
+void redirect_double(char * cmd);
+// takes the null-terminated string pointed to by cmd
+// uses clean_sep_line to separate by '<' then '>'
+// frees mallocs from clean_sep_line calls
+
+int my_pipe(char * cmd);
+// takes the null-terminated string pointed to by cmd and evaluates as a single pipe command
+// forks
+// uses popen() to execute the two commands
+// uses clean_sep_line to separate by '|'
+// frees malloc from clean_sep_line call
+// returns the exit status of the child process (the full int written by wait())
+
+void read_command(char * cmdbuffer);
+// takes a pointer cmdbuffer to a character buffer
+// prints a prompt consisting of the current working directory followed by '$' to STDOUT
+// uses fgets to read BUFFERSIZE characters from STDIN into the command buffer
+
+
+int exec_single(char * cmd);
+// takes the null-terminated string pointed to by cmd and executes as a single command;
+//      calling my_pipe, redirect_out, redirect_in, redirect_double as necessary
+// separates command (once stripped of pipes and redirectons) by ' ' using sep_line
+// forks
+// uses execvp to execute command
+// frees malloc from sep_line call
+// returns either 0 or the exit status (the full int written by wait()) of the child
+
+
+void exec_all(char * cmds);
+// makes a null-terminated array of pointers to null-terminated command strings
+// runs exec_single for each command string
+// uses clean_sep to separate by ';'
+// frees the malloc from clean_sep call
