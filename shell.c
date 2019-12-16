@@ -39,7 +39,7 @@ int exec_single(char * cmd) {
         return f;
     }
 
-    char ** argv = sep_line(cmd, " ");
+    char ** argv = sep_line(cmd, ' ');
     if (strncmp(argv[0], "cd", 2) == 0) {
         chdir(argv[1]);
     } else {
