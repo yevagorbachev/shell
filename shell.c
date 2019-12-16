@@ -25,7 +25,7 @@ int exec_single(char * cmd) {
     int f = 0;
 
     if (strchr(cmd, '|')) {
-        return my_pipe(clean_sep_line(cmd,'|'));
+        return my_pipe(cmd);
     }
 
     if (strchr(cmd, '<') && strchr(cmd, '>')){
@@ -122,10 +122,12 @@ void redirect_in(char * cmd){
     free(args);
 }
 
-int my_pipe(char ** cmdv) {
+int my_pipe(char * cmd) {
+    char ** cmdv = clean_sep_line(cmd, '|');
     int f = handle_errint(fork());
     if (f) {
         handle_errint(wait(&f));
+        free(cmdv);
         return f;
     } else {
         FILE * pipe_from = popen(cmdv[0],"r");
@@ -137,6 +139,9 @@ int my_pipe(char ** cmdv) {
         while ((buf = getc(pipe_from)) != EOF) {
             putc(buf, pipe_to);
         }
+
+        pclose(pipe_from);
+        pclose(pipe_to);
         exit(f);
     }
 }
