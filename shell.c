@@ -138,17 +138,6 @@ void redirect_in(char * cmd){
     if (f) {
         handle_errint(wait(&f));
         handle_errint(dup2(backup,STDIN_FILENO));
-
-        close(fd);
-        close(backup);
-    } else {
-        exit(handle_errint(execvp(argv[0], argv)));
-    }
-
-    f = handle_errint(fork());
-    if (f) {
-        handle_errint(wait(&f));
-        handle_errint(dup2(backup,STDIN_FILENO));
         handle_errint(close(fd));
         handle_errint(close(backup));
         
